@@ -38,19 +38,21 @@ The script relies on the [Slurm workload manager](https://slurm.schedmd.com/docu
 
 ### 2. collate_pathseq_output.py
 ~~~
-python collate_pathseq_output.py $project $assay $min_clipped_read_length
+python collate_pathseq_output.py -p $project -a $assay -m $min_clipped_read_length [ -d $domain -s $statistic ]
 ~~~
-This script parses the PathSeq output files and collates unambiguously-aligned reads for each taxa into an *n* x *m* table, with *n* taxa (NCBI taxonomy ID) and *m* sequencing runs ([UUIDs](https://docs.gdc.cancer.gov/Encyclopedia/pages/UUID/)). This table is saved to `./results/`.
+This script parses the PathSeq output files and collates unambiguously-aligned reads for each taxa into an *n* x *m* table, with *n* taxa (NCBI taxonomy ID) and *m* sequencing runs ([UUIDs](https://docs.gdc.cancer.gov/Encyclopedia/pages/UUID/)). This table is saved to `./results/$project/$assay/$domain.$statistic.txt`. By default, unambiguously aligned reads from pathseq are taken for bacteria only.
 
 *Parameters*
   * `$project` - TCGA sequencing project (eg. COAD)
   * `$assay` - TCGA sequencing strategy (eg. WGS)
   * `$min_clipped_read_length` - this corresponds to a PathSeq parameter which defines the minimum trimmed read length required for alignment.
+  * `$domain` - microbial domain to collect (optional; default is `bacteria`)
+  * `$statistic` - pathseq statistic to collect (optional; default is `unambiguous`)
 
 
 ### 3. compute_prevalence.py
 ~~~
-python compute_prevalence.py $project $assay
+python compute_prevalence.py -p $project -a $assay [ -d $domain -s $statistic ]
 ~~~
 This script compares the prevalence of taxa across various sample types. Metagenomic results from the TCGA brain cancer projects (GBM, LGG) must be present. For a given TCGA sequencing `$project`, it makes three comparisons:
 
@@ -63,7 +65,8 @@ For each comparison, a FDR-normalized fisher exact test is used to estimate the 
 *Parameters*
   * `$project` - TCGA sequencing project (eg. COAD)
   * `$assay` - TCGA sequencing strategy (eg. WGS)
-  
+  * `$domain` - microbial domain to collect (optional; default is `bacteria`)
+  * `$statistic` - pathseq statistic to collect (optional; default is `unambiguous`)
 
 ### 4. decontaminate.py
 ~~~
@@ -76,11 +79,12 @@ The tissue-resident and contaminant components are saved to `./results/$project/
 *Parameters*
   * `$project` - TCGA sequencing project (eg. COAD)
   * `$assay` - TCGA sequencing strategy (eg. WGS)
-
+  * `$domain` - microbial domain to collect (optional; default is `bacteria`)
+  * `$statistic` - pathseq statistic to collect (optional; default is `unambiguous`)
 
 ### 5. collapse_levels.py
 ~~~
-python collapse_levels.py $project $assay $statistic
+python collapse_levels.py -p $project -a $assay -s $statistic [ -d $domain ]
 ~~~
 This script performs various normalization and averaging functions, preparing the TCMA database for downstream analysis using TCGA endpoints.  Microbial compositions are collected and decontaminated by sequencing run. Since samples may be sequenced multiple times and multiple samples may be donated from a given patient, microbial compositions must be grouped and averaged (1) sample-wise and (2) case-wise. This allows the comparison of TCMA to clinically relevant metadata collected at the sample-level (eg. anatomic site) or patient-level (eg. clinical stage) and well as molecular expression assays (eg. RNA-seq, RPPA). 
 
@@ -89,3 +93,5 @@ First, counts are normalized using reads-per-million (RPM) by default. Subsequen
 *Parameters*
   * `$project` - TCGA sequencing project (eg. COAD)
   * `$assay` - TCGA sequencing strategy (eg. WGS)
+  * `$statistic` - statistic to collapse on (eg. `unambiguous` or `unambigous.decontam`)
+  * `$domain` - microbial domain to collect (optional; default is `bacteria`)
