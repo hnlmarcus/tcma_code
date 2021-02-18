@@ -93,5 +93,5 @@ First, counts are normalized using reads-per-million (RPM) by default. Subsequen
 *Parameters*
   * `$project` - TCGA sequencing project (eg. COAD)
   * `$assay` - TCGA sequencing strategy (eg. WGS)
-  * `$statistic` - statistic to collapse on (eg. `unambiguous` or `unambigous.decontam`)
+  * `$statistic` - statistic to collapse on (eg. `unambiguous` or `unambiguous.decontam`)
   * `$domain` - microbial domain to collect (optional; default is `bacteria`)
